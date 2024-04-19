@@ -1,7 +1,19 @@
-#!/usr/bin/env bash
-# A BASH Script that runs nignx webserver as nginx and also configures nginx to
-# listen to port 8080
-pkill apache2
-sed -i 's/80/8080/g' /etc/nginx/sites-available/default
-chmod 644 /etc/nginx/nginx.conf
-sudo -u nginx service nginx restart
+#!/bin/bash
+
+# Stop Nginx service
+service nginx stop
+
+# Change ownership of necessary directories/files to nginx user
+chown -R nginx:nginx /var/log/nginx /var/lib/nginx /etc/nginx /var/www/html
+
+# Update Nginx configuration to run as nginx user
+sed -i 's/^user .*/user nginx;/' /etc/nginx/nginx.conf
+
+# Start Nginx service
+service nginx start
+
+# Verify Nginx is running as nginx user
+ps auxff | grep ngin[x]
+
+# Verify Nginx is listening on port 8080
+nc -z 0 8080
